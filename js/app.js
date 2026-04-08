@@ -1,5 +1,5 @@
 // Base configuration
-const API_URL = '/api/v1';
+const API_URL = ' https://sherlock-campus.onrender.com/api/v1';
 
 // Helper function to handle fetch errors
 async function fetchAPI(endpoint, options = {}) {
