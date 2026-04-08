@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SherLock</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            border-bottom: 4px solid var(--primary-color);
+        }
+        .stat-card h3 { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 0.5rem; }
+        
+        .action-btn {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            margin-right: 0.25rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        .action-btn:hover { transform: scale(1.05); }
+        .btn-verify { background-color: var(--success); }
+        .btn-resolve { background-color: var(--info); }
+        .btn-reject { background-color: var(--danger); }
+        .btn-email { background-color: var(--warning); color: #333; }
+        .btn-match { background-color: #6c5ce7; }
+
+        /* Modal */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 2000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.5); 
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 10% auto; 
+            padding: 2rem;
+            border-radius: var(--radius);
+            width: 90%; 
+            max-width: 600px;
+            box-shadow: var(--shadow-hover);
+            animation: slideDown 0.3s ease-out;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover { color: black; }
+
+        /* Card Grid Layout */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .item-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            border: 1px solid #eee;
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-image-container {
+            height: 200px;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            background: #f0f2f5;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.5s ease;
+        }
+
+        .item-card:hover .card-image {
+            transform: scale(1.05);
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .card-badge-container {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .card-details {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        .card-footer {
+            padding: 1rem 1.5rem;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .student-info-box {
+            background: #f0f8ff;
+            padding: 0.8rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .matches-container {
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px dashed #ccc;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .card-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">🛡 SherLock Admin</a>
+        <div class="nav-links">
+            <span id="adminName" style="margin-right: 1rem; font-weight: 600;"></span>
+            <a href="#" onclick="logout()" style="color: var(--danger);">🚪 Logout</a>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 1400px;">
+        <h2 style="margin-bottom: 1.5rem;">📊 Dashboard Overview</h2>
+        
+        <div class="stats-grid">
+            <div class="stat-card" style="border-color: var(--primary-color);">
+                <h3 id="total-items">0</h3>
+                <p>Total Reports</p>
+            </div>
+            <div class="stat-card" style="border-color: var(--warning);">
+                <h3 id="pending-items">0</h3>
+                <p>🟡 Pending</p>
+            </div>
+            <div class="stat-card" style="border-color: var(--success);">
+                <h3 id="verified-items">0</h3>
+                <p>🟢 Verified</p>
+            </div>
+            <div class="stat-card" style="border-color: var(--info);">
+                <h3 id="matched-items">0</h3>
+                <p>🔁 Matched & Resolved</p>
+            </div>
+        </div>
+
+        <div class="card" style="padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+                <h3>📋 All Reports Management</h3>
+                <div style="flex-grow: 1; max-width: 400px; position: relative;">
+                    <input type="text" id="searchInput" placeholder="🔍 Search by Student, Item, or Status..." 
+                           style="width: 100%; padding: 0.8rem 1rem; border-radius: 50px; border: 2px solid #dfe6e9; outline: none;">
+                </div>
+            </div>
+            
+            <!-- Simple CSS Chart for Distribution -->
+            <div style="margin-bottom: 2rem; background: #f8f9fa; padding: 1rem; border-radius: var(--radius-sm);">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-light);">📊 Status Distribution</h4>
+                <div style="display: flex; height: 20px; border-radius: 10px; overflow: hidden; width: 100%;">
+                    <div id="chart-pending" style="background-color: var(--warning); width: 0%; transition: width 1s;" title="Pending"></div>
+                    <div id="chart-verified" style="background-color: var(--success); width: 0%; transition: width 1s;" title="Verified"></div>
+                    <div id="chart-resolved" style="background-color: var(--info); width: 0%; transition: width 1s;" title="Resolved"></div>
+                    <div id="chart-rejected" style="background-color: var(--danger); width: 0%; transition: width 1s;" title="Rejected"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-top: 5px; color: var(--text-light);">
+                    <span>🟡 Pending</span>
+                    <span>🟢 Verified</span>
+                    <span>🔵 Resolved</span>
+                    <span>🔴 Rejected</span>
+                </div>
+            </div>
+
+            <div id="items-grid" class="card-grid">
+                <p style="text-align:center; grid-column: 1/-1;">Loading reports... ⏳</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content" style="max-width: 800px; text-align: center;">
+            <span class="close" onclick="closeImageModal()">&times;</span>
+            <div id="imageModalContent" style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;"></div>
+            <div id="imageModalActions" style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 1rem;"></div>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        // Ensure admin
+        const { user } = checkAuth();
+        if (!user || user.role !== 'admin') {
+            window.location.href = 'admin-login.html';
+        } else {
+            document.getElementById('adminName').textContent = `Hi, ${user.name}`;
+        }
+
+        // Helper function for images
+        function getImageUrl(url) {
+            if (!url) {
+                return 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200"><rect width="100%" height="100%" fill="#eef2f7"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#7f8c8d">No Image</text></svg>';
+            }
+            return url.startsWith("http")
+                ? url
+                : "https://sherlock-lost-and-found.onrender.com" + url;
+        }
+
+        // Search functionality
+        let currentSearchTerm = '';
+        
+        document.getElementById('searchInput').addEventListener('keyup', function(e) {
+            currentSearchTerm = e.target.value.toLowerCase();
+            filterTable();
+        });
+
+        function filterTable() {
+            const cards = document.querySelectorAll('.item-card');
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(currentSearchTerm) ? 'flex' : 'none';
+            });
+        }
+
+        async function loadDashboard() {
+            try {
+                const items = await fetchAPI('/items/admin');
+                
+                // Update stats
+                const total = items.length;
+                const pending = items.filter(i => i.status === 'pending').length;
+                const verified = items.filter(i => i.status === 'verified').length;
+                const matched = items.filter(i => i.status === 'resolved' || i.status === 'matched').length;
+                const rejected = items.filter(i => i.status === 'rejected').length;
+
+                document.getElementById('total-items').textContent = total;
+                document.getElementById('pending-items').textContent = pending;
+                document.getElementById('verified-items').textContent = verified;
+                document.getElementById('matched-items').textContent = matched;
+
+                // Update Chart
+                if (total > 0) {
+                    document.getElementById('chart-pending').style.width = (pending / total * 100) + '%';
+                    document.getElementById('chart-verified').style.width = (verified / total * 100) + '%';
+                    document.getElementById('chart-resolved').style.width = (matched / total * 100) + '%';
+                    document.getElementById('chart-rejected').style.width = (rejected / total * 100) + '%';
+                }
+
+                // Update grid
+                const grid = document.getElementById('items-grid');
+                
+                if (items.length === 0) {
+                    grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">No reports found.</p>';
+                    return;
+                }
+
+                grid.innerHTML = items.map(item => {
+                    const reporterUser = item.user;
+                    const studentInfo = `
+                        <div class="student-info-box">
+                            <strong>${item.studentName || reporterUser?.name || 'N/A'}</strong><br>
+                            <small>${item.rollNumber || ''}</small> | <small>${item.branch || ''}</small><br>
+                            <small>📞 ${item.contactInfo || 'N/A'}</small><br>
+                            <small>✉️ ${item.studentEmail || reporterUser?.email || 'N/A'}</small>
+                        </div>
+                    `;
+
+                    let matchesHtml = '';
+                    if (item.potentialMatches && item.potentialMatches.length > 0) {
+                        matchesHtml = `
+                        <div class="matches-container">
+                            <h5 style="margin-bottom: 0.5rem;">🔍 Potential Matches:</h5>
+                            ${item.potentialMatches.map(m => `
+                                <div style="background:#f0f3f8; padding:5px; margin-bottom:5px; border-radius:5px; font-size:0.85rem; display:flex; justify-content:space-between; align-items:center;">
+                                    <span>${m.title}</span>
+                                    <button class="action-btn btn-match" style="padding: 0.2rem 0.5rem; font-size: 0.7rem;" onclick="compareImages('${item._id}', '${m._id}')">Compare</button>
+                                </div>
+                            `).join('')}
+                        </div>`;
+                    }
+                    if (item.matchedWith) {
+                        matchesHtml = `<div class="matches-container"><span class="badge resolved">Matched with: ${item.matchedWith.title}</span></div>`;
+                    }
+
+                    return `
+                    <div class="item-card" id="card-${item._id}">
+                        <div class="card-image-container">
+                            <img src="${getImageUrl(item.imageUrl)}" class="card-image" onclick="viewImage('${item._id}')" alt="Item">
+                            <div style="position: absolute; top: 10px; right: 10px;">
+                                <span class="badge ${item.type}">${item.type.toUpperCase()}</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-badge-container">
+                                <span class="badge ${item.status}">${item.status.toUpperCase()}</span>
+                                <small style="color: #888;">${new Date(item.date).toLocaleDateString()}</small>
+                            </div>
+                            <h3 class="card-title">${item.title}</h3>
+                            <div class="card-details">
+                                <small>🎨 Color: ${item.color}</small><br>
+                                <small>📍 Location: ${item.location}</small>
+                            </div>
+                            
+                            ${studentInfo}
+                            
+                            ${item.verificationQuestions && item.verificationQuestions.length > 0 ? 
+                              `<div style="font-size: 0.8rem; background: #fff8e1; padding: 0.8rem; border-radius: 8px; border-left: 4px solid #ffc107; margin-top: 0.5rem;">
+                                 <strong style="display: block; margin-bottom: 0.3rem;">🔐 Verification Questions:</strong>
+                                 <ul style="padding-left: 1.2rem; margin: 0;">
+                                   ${item.verificationQuestions.map(q => `<li>${q}</li>`).join('')}
+                                 </ul>
+                               </div>` : ''}
+
+                            ${matchesHtml}
+                        </div>
+                        <div class="card-footer">
+                            ${item.status === 'pending' ? `<button class="action-btn btn-verify" onclick="updateStatus('${item._id}', 'verified')">Verify</button>` : ''}
+                            ${item.status === 'verified' && !item.matchedWith ? `<button class="action-btn btn-resolve" onclick="updateStatus('${item._id}', 'resolved')">Manual Resolve</button>` : ''}
+                            <button class="action-btn btn-match" style="position:relative;" onclick="window.location.href='chat.html?itemId=${item._id}&userId=${reporterUser?._id || ''}'">
+                                💬 Chat
+                                <span class="unread-badge" id="unread-${item._id}" style="display:none; position:absolute; top:-8px; right:-8px; background:var(--danger); color:white; border-radius:50%; width:20px; height:20px; font-size:0.7rem; display:flex; align-items:center; justify-content:center;">0</span>
+                            </button>
+                            <button class="action-btn btn-reject" onclick="deleteItem('${item._id}')">🗑</button>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+
+                // Re-apply search filter
+                if(currentSearchTerm) filterTable();
+                
+                // Trigger unread badges render
+                if (typeof renderUnreadBadges === 'function') renderUnreadBadges();
+
+            } catch (error) {
+                console.error(error);
+                alert('Error loading dashboard: ' + error.message);
+            }
+        }
+
+        // Unread Badges Logic
+        window.renderUnreadBadges = function() {
+            if (!window.unreadChatCounts) return;
+            
+            Object.keys(window.unreadChatCounts).forEach(itemId => {
+                const badge = document.getElementById(`unread-${itemId}`);
+                if (badge) {
+                    const count = window.unreadChatCounts[itemId];
+                    if (count > 0) {
+                        badge.textContent = count > 9 ? '9+' : count;
+                        badge.style.display = 'flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            });
+        };
+
+        // Image Analysis Functions
+        const imageModal = document.getElementById('imageModal');
+        const imageContent = document.getElementById('imageModalContent');
+        const imageActions = document.getElementById('imageModalActions');
+        let allItemsCache = []; // To easily find items for comparison without refetching
+
+        async function getItemById(id) {
+             const items = await fetchAPI('/items/admin');
+             return items.find(i => i._id === id);
+        }
+
+        async function viewImage(id) {
+            const item = await getItemById(id);
+            if (!item) return;
+
+            document.getElementById('imageModalContent').innerHTML = `
+                <div>
+                    <h3>${item.title}</h3>
+                    <img src="${getImageUrl(item.imageUrl)}" style="width:300px;">
+                    <p style="margin-top: 1rem;">Status: <span class="badge ${item.status}">${item.status.toUpperCase()}</span></p>
+                </div>
+            `;
+            
+            document.getElementById('imageModalActions').innerHTML = `
+                ${item.status === 'pending' ? `<button class="action-btn btn-verify" onclick="updateStatus('${item._id}', 'verified'); closeImageModal();">✅ Verify Image & Item</button>` : ''}
+                <button class="action-btn btn-reject" onclick="deleteItem('${item._id}'); closeImageModal();">❌ Reject & Delete</button>
+            `;
+            
+            document.getElementById('imageModal').style.display = 'block';
+        }
+
+        async function compareImages(itemId, matchId) {
+            const item = await getItemById(itemId);
+            const allItems = await fetchAPI('/items/admin');
+            const match = allItems.find(i => i._id === matchId);
+
+            if (!item || !match) {
+                alert('Could not load item details.');
+                return;
+            }
+
+            const itemImage = getImageUrl(item.imageUrl);
+            const matchImage = getImageUrl(match.imageUrl);
+
+            document.getElementById('imageModalContent').innerHTML = `
+                <div style="flex:1;">
+                    <h3>Original: ${item.title}</h3>
+                    <img src="${itemImage}" style="width:300px;">
+                    <p>Type: ${item.type}</p>
+                </div>
+                <div style="display: flex; align-items: center; font-size: 2rem;">🆚</div>
+                <div style="flex:1;">
+                    <h3>Match: ${match.title}</h3>
+                    <img src="${matchImage}" style="width:300px;">
+                    <p>Type: ${match.type}</p>
+                </div>
+            `;
+
+            document.getElementById('imageModalActions').innerHTML = `
+                <button class="action-btn btn-match" style="padding: 1rem 2rem; font-size: 1.2rem;" onclick="confirmMatch('${item._id}', '${match._id}'); closeImageModal();">✅ Confirm Match & Chat</button>
+            `;
+
+            document.getElementById('imageModal').style.display = 'block';
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        async function updateStatus(id, status) {
+            try {
+                await fetchAPI(`/items/${id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ status })
+                });
+                loadDashboard();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        async function confirmMatch(itemId, matchId) {
+            const item = await getItemById(itemId);
+            if(!confirm('Confirm this match? This will mark both items as resolved and open chat.')) return;
+            try {
+                await fetchAPI(`/items/${itemId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ matchedWithId: matchId })
+                });
+                alert('Match confirmed! Opening chat... 💬');
+                window.location.href = `chat.html?itemId=${itemId}&userId=${item.user?._id || ''}`;
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        async function deleteItem(id) {
+            if(!confirm('Permanently delete this item?')) return;
+            try {
+                await fetchAPI(`/items/${id}`, { method: 'DELETE' });
+                loadDashboard();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        window.onclick = function(event) {
+            if (event.target == imageModal) {
+                closeImageModal();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
+</body>
+</html>

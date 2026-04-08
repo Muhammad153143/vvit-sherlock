@@ -1,0 +1,8 @@
+{
+  "routes": [
+    {
+      "src": "/reset-password",
+      "dest": "/html/reset-password.html"
+    }
+  ]
+}

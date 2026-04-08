@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Item - SherLock</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">🏠 SherLock</a>
+        <div class="nav-links">
+             <a href="index.html">🏠 Home</a>
+             <a href="my-reports.html">📋 My Reports</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card" style="max-width: 800px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <span style="font-size: 3rem;">📝</span>
+                <h2 style="color: var(--primary-color);">Report an Item</h2>
+                <p style="color: var(--text-light);">Help us find it or return it!</p>
+            </div>
+            
+            <form id="reportForm" enctype="multipart/form-data">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="type">Report Type</label>
+                        <select id="type" required>
+                            <option value="lost">🔴 Lost Item</option>
+                            <option value="found">🟢 Found Item</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" id="date" required>
+                        <small id="dateError" style="color:#dc2626;display:none;">Date cannot be in the future</small>
+                    </div>
+                </div>
+
+                <!-- Student Details Section -->
+                <h3 style="margin-bottom: 1rem; color: var(--text-light); border-bottom: 2px dashed #eee; padding-bottom: 0.5rem;">🧑‍🎓 Student Details</h3>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="studentName">Student Name</label>
+                        <input type="text" id="studentName" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="rollNumber">Roll Number</label>
+                        <input type="text" id="rollNumber" required placeholder="e.g. 23BQ1A05K5">
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="branch">Branch / Department</label>
+                        <input type="text" id="branch" required placeholder="e.g. CSE, ECE">
+                    </div>
+                    <div class="form-group">
+                        <label for="studentEmail">Student Email ID</label>
+                        <input type="email" id="studentEmail" required placeholder="e.g. 23bq1a05k5@vvit.net">
+                    </div>
+                </div>
+
+                <!-- Item Details Section -->
+                <h3 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--text-light); border-bottom: 2px dashed #eee; padding-bottom: 0.5rem;">📦 Item Details</h3>
+                
+                <div class="form-group">
+                    <label for="title">Item Title</label>
+                    <input type="text" id="title" placeholder="e.g. Black Dell Laptop" required>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category" required>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Documents">Documents</option>
+                            <option value="Accessories">Accessories</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="color">Color</label>
+                        <input type="text" id="color" placeholder="e.g. Black, Red, Blue" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Location (Lost/Found)</label>
+                    <input type="text" id="location" placeholder="e.g. Library, Room 301" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" rows="4" required placeholder="Provide distinguishing features..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contactInfo">Alternate Contact Info</label>
+                    <input type="text" id="contactInfo" placeholder="Phone Number" required>
+                </div>
+
+                <!-- Image Upload Section -->
+                <h3 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--text-light); border-bottom: 2px dashed #eee; padding-bottom: 0.5rem;">📸 Item Photo</h3>
+                <div class="form-group">
+                    <label for="itemImage">Upload Image (Required)</label>
+                    <div id="uploadBox" style="border: 2px dashed #ccc; padding: 2rem; text-align: center; border-radius: var(--radius-sm); background: #fff; transition: all 0.3s;">
+                        <div style="margin-bottom: 1rem;">
+                            <span style="font-size: 2.5rem;">🖼️</span>
+                        </div>
+                        <input type="file" id="itemImage" accept="image/*" required style="display: block; margin: 0 auto; padding: 0.5rem;">
+                        <p style="margin-top: 0.5rem; color: var(--text-light); font-size: 0.9rem;">Supported formats: JPG, PNG</p>
+                        <img id="imagePreview" src="" alt="Image Preview" style="display: none; max-width: 100%; max-height: 300px; margin-top: 1rem; border-radius: var(--radius-sm); box-shadow: var(--shadow);">
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <!-- Verification Questions Section -->
+                <h3 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--text-light); border-bottom: 2px dashed #eee; padding-bottom: 0.5rem;">🔐 Ownership Verification Questions</h3>
+                <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; border: 1px solid #e9ecef; margin-bottom: 1.5rem;">
+                    <p style="color: #6c757d; font-size: 0.9rem; margin-bottom: 1rem;">
+                        Add 2-3 private questions that only the owner would know (e.g., "What sticker is on the laptop lid?", "What is the wallpaper?").
+                        <br><strong>Note:</strong> You must add at least 2 questions.
+                    </p>
+                    
+                    <div id="questionsContainer">
+                        <!-- Dynamic questions will be added here -->
+                    </div>
+
+                    <button type="button" id="addQuestionBtn" class="btn" style="background-color: #6c757d; margin-top: 1rem; font-size: 0.9rem; width: auto;">
+                        ➕ Add Question
+                    </button>
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%; margin-top: 1rem;">🚀 Submit Report</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        const { user } = checkAuth();
+        if (!user) {
+            window.location.href = 'login.html';
+        }
+
+        // Pre-fill student details if available in user object (optional, but good UX)
+        if (user) {
+            document.getElementById('studentName').value = user.name || '';
+            document.getElementById('studentEmail').value = user.email || '';
+        }
+
+        // Pre-select type based on URL query param
+        const urlParams = new URLSearchParams(window.location.search);
+        const typeParam = urlParams.get('type');
+        if (typeParam) {
+            document.getElementById('type').value = typeParam;
+        }
+
+        // Image Preview Logic
+        const uploadBox = document.getElementById('uploadBox');
+        const fileInput = document.getElementById('itemImage');
+        const preview = document.getElementById('imagePreview');
+        const dateInput = document.getElementById('date');
+        const dateError = document.getElementById('dateError');
+        const todayStr = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('max', todayStr);
+        dateInput.addEventListener('change', () => {
+            const val = dateInput.value;
+            if (val && new Date(val) > new Date()) {
+                dateError.style.display = 'block';
+            } else {
+                dateError.style.display = 'none';
+            }
+        });
+
+        // Duplicate Check Logic
+        async function performDuplicateCheck() {
+            const title = document.getElementById('title').value;
+            const category = document.getElementById('category').value;
+            const type = document.getElementById('type').value;
+            const date = document.getElementById('date').value;
+            const location = document.getElementById('location').value;
+
+            // Only check if we have minimal info. Date is crucial for the backend query.
+            if (!title || !category || !date) return;
+
+            try {
+                 const token = localStorage.getItem('token');
+                 const res = await fetch(' https://sherlock-lost-and-found.onrender.com/api/v1/items/check-duplicate', {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json',
+                         'Authorization': `Bearer ${token}`
+                     },
+                     body: JSON.stringify({ title, category, type, date, location })
+                 });
+                 
+                 const data = await res.json();
+                 
+                 // Remove existing warning
+                 const existingWarning = document.getElementById('duplicateWarning');
+                 if (existingWarning) existingWarning.remove();
+
+                 if (data.found) {
+                     // Create warning banner
+                     const warningDiv = document.createElement('div');
+                     warningDiv.id = 'duplicateWarning';
+                     warningDiv.style.cssText = `
+                         background-color: #fff3cd; 
+                         color: #856404; 
+                         padding: 1rem; 
+                         margin-bottom: 1rem; 
+                         border: 1px solid #ffeeba; 
+                         border-radius: 4px;
+                         display: flex;
+                         align-items: center;
+                         justify-content: space-between;
+                         animation: fadeIn 0.5s;
+                     `;
+                     
+                     warningDiv.innerHTML = `
+                        <div>
+                            <strong>⚠️ Possible Duplicate Found!</strong><br>
+                            ${data.message}<br>
+                            ${data.items.length > 0 ? `<small>Similar item: "${data.items[0].title}" (${new Date(data.items[0].date).toLocaleDateString()})</small>` : ''}
+                        </div>
+                        <button type="button" onclick="this.parentElement.remove()" style="background:none;border:none;cursor:pointer;font-size:1.5rem;color:#856404;">&times;</button>
+                     `;
+                     
+                     // Insert before form
+                     const form = document.getElementById('reportForm');
+                     form.parentNode.insertBefore(warningDiv, form);
+                     
+                     // Scroll to warning
+                     warningDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                 }
+
+            } catch (error) {
+                console.error("Duplicate check failed:", error);
+            }
+        }
+
+        // Attach listeners for duplicate check
+        document.getElementById('title').addEventListener('blur', performDuplicateCheck);
+        document.getElementById('category').addEventListener('change', performDuplicateCheck);
+        document.getElementById('date').addEventListener('blur', performDuplicateCheck); // Also check when date is changed
+        document.getElementById('location').addEventListener('blur', performDuplicateCheck);
+
+        // Removed click listener on uploadBox to avoid conflict with visible file input
+        // uploadBox.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    uploadBox.style.borderColor = 'var(--primary-color)';
+                    uploadBox.style.backgroundColor = '#f0f3f8';
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+                preview.src = '';
+            }
+        });
+
+        // Verification Questions Logic
+        const questionsContainer = document.getElementById('questionsContainer');
+        const addQuestionBtn = document.getElementById('addQuestionBtn');
+        const typeSelect = document.getElementById('type');
+        const verifHelpText = document.querySelector('#questionsContainer').previousElementSibling;
+
+        function updateVerificationHelp() {
+            if (typeSelect.value === 'lost') {
+                verifHelpText.innerHTML = `
+                    <strong>🔐 Private Verification Questions (Lost Item):</strong><br>
+                    Add 2-3 questions about <em>hidden attributes</em> that only YOU (the owner) know. 
+                    (e.g., "What is the wallpaper?", "Is there a scratch on the back?", "What is inside the pocket?").
+                    <br><small>These questions will be asked to anyone claiming this item.</small>
+                `;
+            } else {
+                verifHelpText.innerHTML = `
+                    <strong>🔐 Observable Verification Questions (Found Item):</strong><br>
+                    Add 2-3 questions about details you found but <em>did not show in the picture</em>.
+                    (e.g., "What is the brand of the charger?", "What is the name on the ID card inside?").
+                    <br><small>The claimant must answer these correctly to prove ownership.</small>
+                `;
+            }
+        }
+
+        typeSelect.addEventListener('change', updateVerificationHelp);
+        // Initialize on load
+        updateVerificationHelp();
+
+        function createQuestionRow(index) {
+            const div = document.createElement('div');
+            div.className = 'question-row';
+            div.style.cssText = `
+                display: grid;
+                grid-template-columns: 1fr 1fr auto;
+                gap: 1rem;
+                margin-bottom: 1rem;
+                align-items: start;
+                background: #fff;
+                padding: 1rem;
+                border-radius: 6px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            `;
+            
+            div.innerHTML = `
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="font-size: 0.85rem;">Question ${index + 1}</label>
+                    <input type="text" name="verif_q[]" required placeholder="e.g. What is the laptop wallpaper?" style="width: 100%; box-sizing: border-box;">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="font-size: 0.85rem;">Answer (Private)</label>
+                    <input type="password" name="verif_a[]" required placeholder="Answer" style="width: 100%; box-sizing: border-box;">
+                </div>
+                <button type="button" class="remove-q-btn" style="margin-top: 1.5rem; background: #fee2e2; color: #dc2626; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer;">🗑️</button>
+            `;
+
+            // Add remove functionality
+            div.querySelector('.remove-q-btn').addEventListener('click', () => {
+                if (document.querySelectorAll('.question-row').length > 2) {
+                    div.remove();
+                    updateQuestionLabels();
+                } else {
+                    alert('You must have at least 2 verification questions.');
+                }
+            });
+
+            return div;
+        }
+
+        function updateQuestionLabels() {
+            document.querySelectorAll('.question-row').forEach((row, idx) => {
+                row.querySelector('label').textContent = `Question ${idx + 1}`;
+            });
+        }
+
+        // Initialize with 2 empty question rows
+        if (questionsContainer) {
+            questionsContainer.appendChild(createQuestionRow(0));
+            questionsContainer.appendChild(createQuestionRow(1));
+        }
+
+        if (addQuestionBtn) {
+            addQuestionBtn.addEventListener('click', () => {
+                const count = document.querySelectorAll('.question-row').length;
+                if (count < 5) {
+                    questionsContainer.appendChild(createQuestionRow(count));
+                } else {
+                    alert('Maximum 5 questions allowed.');
+                }
+            });
+        }
+
+        document.getElementById('reportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // STRICT VALIDATION
+            const errors = [];
+            
+            // 1. Date Validation
+            const dateVal = document.getElementById('date').value;
+            if (new Date(dateVal) > new Date()) {
+                errors.push("Date cannot be in the future.");
+                dateError.style.display = 'block';
+            }
+
+            // 2. Student Name (Alphabets & spaces only)
+            const nameVal = document.getElementById('studentName').value;
+            if (!/^[a-zA-Z\s]+$/.test(nameVal)) {
+                errors.push("Student Name must contain alphabets only.");
+            }
+
+            // 3. Roll Number (Alphanumeric only)
+            const rollVal = document.getElementById('rollNumber').value;
+            if (!/^[a-zA-Z0-9]+$/.test(rollVal)) {
+                errors.push("Roll Number must be alphanumeric (no special characters).");
+            }
+
+            // 4. Branch (Alphabets only)
+            const branchVal = document.getElementById('branch').value;
+            if (!/^[a-zA-Z]+$/.test(branchVal)) {
+                errors.push("Branch/Department must contain alphabets only.");
+            }
+
+            // 5. Email (Institutional format - basic check)
+            const emailVal = document.getElementById('studentEmail').value;
+            if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(emailVal)) {
+                errors.push("Please enter a valid email address.");
+            }
+
+            // 6. Color (Alphabets only)
+            const colorVal = document.getElementById('color').value;
+            if (!/^[a-zA-Z]+$/.test(colorVal)) {
+                errors.push("Color must contain alphabets only.");
+            }
+
+            // 7. Contact Info (Exactly 10 digits)
+            const contactVal = document.getElementById('contactInfo').value;
+            if (!/^\d{10}$/.test(contactVal)) {
+                errors.push("Contact Information must be exactly 10 digits.");
+            }
+
+            // 8. Title & Description Length
+            const titleVal = document.getElementById('title').value;
+            if (titleVal.length < 3) errors.push("Item Title must be at least 3 characters.");
+
+            const descVal = document.getElementById('description').value;
+            if (descVal.length < 10) errors.push("Description must be at least 10 characters.");
+
+            // 9. Location Length
+            const locVal = document.getElementById('location').value;
+            if (locVal.length < 3) errors.push("Location must be at least 3 characters.");
+
+            // 10. Image Validation
+            const imageFile = document.getElementById('itemImage').files[0];
+            if (!imageFile) {
+                errors.push("Item Image is required.");
+            } else {
+                const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+                if (!validTypes.includes(imageFile.type)) {
+                    errors.push("Image must be JPG or PNG.");
+                }
+                if (imageFile.size > 5 * 1024 * 1024) { // 5MB limit
+                    errors.push("Image size should be less than 5MB.");
+                }
+            }
+
+            // 11. Verification Questions Count
+            const questions = Array.from(document.getElementsByName('verif_q[]')).map(i => i.value);
+            const answers = Array.from(document.getElementsByName('verif_a[]')).map(i => i.value);
+
+            if (questions.length < 2) {
+                errors.push("Please provide at least 2 verification questions.");
+            }
+
+            if (errors.length > 0) {
+                alert("Validation Errors:\n• " + errors.join("\n• "));
+                return;
+            }
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = 'Submitting...';
+            submitBtn.disabled = true;
+            
+            const formData = new FormData();
+            formData.append('type', document.getElementById('type').value);
+            formData.append('date', dateVal);
+            formData.append('studentName', nameVal);
+            formData.append('rollNumber', rollVal);
+            formData.append('branch', branchVal);
+            formData.append('studentEmail', emailVal);
+            formData.append('title', titleVal);
+            formData.append('category', document.getElementById('category').value);
+            formData.append('color', colorVal);
+            formData.append('location', locVal);
+            formData.append('description', descVal);
+            formData.append('contactInfo', contactVal);
+            
+            // Since we are using FormData, we should append these as JSON strings or individual arrays
+            // For simplicity and to match our controller update:
+            formData.append('verificationQuestions', JSON.stringify(questions));
+            formData.append('verificationAnswers', JSON.stringify(answers));
+
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+
+            try {
+                // Using fetch directly because fetchAPI helper might assume JSON content-type
+                const token = localStorage.getItem('token');
+                const res = await fetch('https://sherlock-lost-and-found.onrender.com/api/v1/items', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                        // Content-Type is set automatically for FormData
+                    },
+                    body: formData
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.message || 'Something went wrong');
+                }
+
+                alert('Report submitted successfully! 🕵️‍♂️');
+                window.location.href = 'my-reports.html';
+
+            } catch (error) {
+                alert(error.message);
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

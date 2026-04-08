@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SherLock - Smart Campus Lost & Found</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .hero {
+            text-align: center;
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, #fff, #f0f3f8);
+            border-radius: var(--radius);
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 4px solid var(--primary-light);
+        }
+        
+        /* Cartoon Clouds/Blobs */
+        .hero::before, .hero::after {
+            content: '';
+            position: absolute;
+            background: var(--primary-light);
+            opacity: 0.1;
+            border-radius: 50%;
+            z-index: 0;
+        }
+        .hero::before {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            left: -100px;
+        }
+        .hero::after {
+            width: 200px;
+            height: 200px;
+            bottom: -50px;
+            right: -50px;
+            background: var(--secondary-color);
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: 800;
+            position: relative;
+            z-index: 1;
+            text-shadow: 2px 2px 0px #fff, 4px 4px 0px rgba(0,0,0,0.1);
+        }
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--text-light);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stat-item {
+            transition: transform 0.3s;
+        }
+        .stat-item:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+        .stat-item h3 {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">🏠 SherLock</a>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html">🏠 Home</a>
+            <a href="login.html" id="loginLink">🔐 Login</a>
+            <a href="register.html" id="registerLink">📝 Register</a>
+            <a href="admin-login.html">🛡 Admin</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header class="hero">
+            <h1>SherLock 🔍</h1>
+            <p>The smartest way to find what you've lost on campus. Report, Search, and Match items instantly!</p>
+            
+            <div class="hero-actions">
+                <a href="report-item.html?type=lost" class="btn">📌 Report Lost Item</a>
+                <a href="report-item.html?type=found" class="btn btn-secondary">📦 Report Found Item</a>
+            </div>
+        </header>
+
+        <section class="stats-banner">
+            <div class="stat-item">
+                <h3>🔍</h3>
+                <p>Search Items</p>
+            </div>
+            <div class="stat-item">
+                <h3>⚡</h3>
+                <p>Fast Matching</p>
+            </div>
+            <div class="stat-item">
+                <h3>🛡</h3>
+                <p>Secure Process</p>
+            </div>
+        </section>
+
+        <section id="recent-items">
+            <h2 style="text-align: center; margin-bottom: 2rem; color: var(--primary-color);">📢 Recent Reports</h2>
+            <div id="items-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
+                <!-- Items will be loaded here dynamically -->
+                <div class="card" style="text-align: center;">
+                    <h3>Loading items... ⏳</h3>
+                </div>
+            </div>
+        </section>
+
+        <section class="quotes-section">
+            <h3>💬 Campus Voices</h3>
+            <br>
+            <p>"SherLock saved me! I found my ID card within hours. Best system ever!" - <small>Happy Student</small></p>
+            <br>
+            <p>"Reporting found items is so easy now. Glad to help fellow students." - <small>Responsible Senior</small></p>
+        </section>
+    </div>
+
+    <div id="claimModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.5);">
+        <div class="modal-content" style="background-color:#fefefe; margin:15% auto; padding:2rem; border:1px solid #888; width:90%; max-width:500px; border-radius:var(--radius);">
+            <span class="close" onclick="closeClaimModal()" style="color:#aaa; float:right; font-size:28px; font-weight:bold; cursor:pointer;">&times;</span>
+            <h2 style="color:var(--primary-color); margin-bottom:1rem;">🔐 Verify Claim</h2>
+            <p style="margin-bottom:1rem;">To claim <strong><span id="claimItemTitle"></span></strong>, please answer the security questions set by the reporter.</p>
+            
+            <form id="claimForm">
+                <input type="hidden" id="claimItemId">
+                <div id="claimQuestionsContainer"></div>
+                <button type="submit" class="btn" style="width:100%; margin-top:1rem;">Submit Answers</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        // Claim Modal Logic
+        const modal = document.getElementById('claimModal');
+        
+        function openClaimModal(id, title, questions) {
+            document.getElementById('claimItemId').value = id;
+            document.getElementById('claimItemTitle').innerText = title;
+            const container = document.getElementById('claimQuestionsContainer');
+            container.innerHTML = '';
+            
+            questions.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.style.marginBottom = '1rem';
+                div.innerHTML = `
+                    <label style="display:block; margin-bottom:0.5rem; font-weight:bold;">Q${index+1}: ${q}</label>
+                    <input type="text" name="claim_answer" required placeholder="Your answer..." style="width:100%; padding:0.5rem; border:1px solid #ccc; border-radius:4px;">
+                `;
+                container.appendChild(div);
+            });
+            
+            modal.style.display = 'block';
+        }
+
+        function closeClaimModal() {
+            modal.style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeClaimModal();
+            }
+        }
+
+        document.getElementById('claimForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('claimItemId').value;
+            const answers = Array.from(document.getElementsByName('claim_answer')).map(i => i.value);
+            const token = localStorage.getItem('token'); // Use raw token from localStorage as fetchAPI might handle it differently
+
+            if (!token) {
+                alert('Please login to claim items!');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const res = await fetch(`https://sherlock-lost-and-found.onrender.com/api/v1/items/${id}/claim`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ answers })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    alert('✅ ' + data.message);
+                    closeClaimModal();
+                    // Optionally refresh items or update UI
+                } else {
+                    alert('❌ ' + (data.message || 'Verification failed'));
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error submitting claim');
+            }
+        });
+
+        async function loadRecentItems() {
+            try {
+                const items = await fetchAPI('/items'); // Public endpoint
+                const grid = document.getElementById('items-grid');
+                
+                if (items.length === 0) {
+                    grid.innerHTML = '<div class="card" style="grid-column: 1/-1; text-align: center;"><p>No items reported yet. Be the first! 🚀</p></div>';
+                    return;
+                }
+
+                grid.innerHTML = items.map(item => `
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                            <span class="badge ${item.type}">${item.type.toUpperCase()}</span>
+                            <small>${new Date(item.date).toLocaleDateString()}</small>
+                        </div>
+                        <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">${item.title}</h3>
+                        <p style="color: var(--text-light); margin-bottom: 0.5rem;">📍 ${item.location}</p>
+                        <p style="color: var(--text-light); margin-bottom: 1rem;">🎨 ${item.color || 'N/A'}</p>
+                        <p>${item.description}</p>
+                        <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed #eee; font-size: 0.9rem; color: var(--text-light);">
+                            Reported by: <strong>${item.user ? item.user.name : 'Unknown'}</strong>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error(error);
+                document.getElementById('items-grid').innerHTML = '<div class="card" style="text-align: center;"><p>Please <a href="login.html">Login</a> to view details.</p></div>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadRecentItems);
+    </script>
+</body>
+</html>
+

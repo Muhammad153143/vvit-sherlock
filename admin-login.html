@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - SherLock</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">🏠 SherLock</a>
+        <div class="nav-links">
+            <a href="index.html">🏠 Home</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card" style="max-width: 500px; margin: 4rem auto; border-top: 5px solid var(--danger);">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <span style="font-size: 4rem;">🛡</span>
+                <h2 style="color: var(--danger); margin-top: 1rem;">Admin Access</h2>
+                <p style="color: var(--text-light);">Secure Login for Campus Officials</p>
+            </div>
+            
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label for="username">Admin ID / Email</label>
+                    <input type="text" id="username" required placeholder="Enter Admin ID or Email">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-danger" style="width: 100%; border-radius: 50px;">🚀 Login to Dashboard</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const data = await fetchAPI('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (data.role !== 'admin') {
+                    throw new Error('⛔ Access denied. Admins only.');
+                }
+
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data));
+                
+                window.location.href = 'admin-dashboard.html';
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+    </script>
+</body>
+</html>
