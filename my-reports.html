@@ -25,7 +25,7 @@
 
     <script src="../js/app.js"></script>
     <script>
-        const BASE_URL = "/api/v1";
+        const BASE_URL = " https://sherlock-campus.onrender.com/api/v1";
         async function loadMyItems() {
             try {
                 const items = await fetchAPI('/items/myitems');
@@ -40,7 +40,7 @@
 
     const imageUrl = item.imageUrl && item.imageUrl.startsWith("http")
         ? item.imageUrl
-        : item.imageUrl;
+        :" https://sherlock-campus.onrender.com" + item.imageUrl;
 
     return `
     <div class="card">
