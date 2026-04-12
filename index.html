@@ -198,7 +198,7 @@
             }
 
             try {
-                const res = await fetch(`https://sherlock-campus.onrender.com/api/v1/items/${id}/claim`, {
+                const res = await fetch(`/api/v1/items/${id}/claim`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
