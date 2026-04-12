@@ -1,4 +1,4 @@
-const socket = io();
+const socket = io('https://sherlock-campus.onrender.com');
 
 // Get query parameters
 const urlParams = new URLSearchParams(window.location.search);
@@ -131,7 +131,7 @@ chatForm.addEventListener('submit', async (e) => {
             method: 'POST',
             body: JSON.stringify(messageData)
         });
-
+        appendMessage(savedMsg);
         socket.emit('sendMessage', savedMsg);
         messageInput.value = '';
     } catch (err) {
