@@ -132,7 +132,6 @@ chatForm.addEventListener('submit', async (e) => {
             body: JSON.stringify(messageData)
         });
         appendMessage(savedMsg);
-        socket.emit('sendMessage', savedMsg);
         messageInput.value = '';
     } catch (err) {
         console.error('Error sending message:', err);
